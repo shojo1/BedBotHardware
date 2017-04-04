@@ -11,7 +11,7 @@ except ImportError:
 os.system('modprobe w1-gpio')
 os.system('modprobe w1-therm')
 
-temp_sensor = ‘sys/bus/w1/devices/28-000005e2fdc3/w1_slave’
+temp_sensor = 'sys/bus/w1/devices/28-000005e2fdc3/w1_slave'
 
 
 def temp_raw():
