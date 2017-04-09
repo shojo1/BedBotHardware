@@ -9,6 +9,8 @@
 #include <curl/curl.h>
 #include <time.h>
 
+#define numChamb 3
+
 struct url_data {
     size_t size;
     char* data;
@@ -73,33 +75,40 @@ char *handle_url(char* url) {
 
 int main() {
     //number of air chambers
-    int const numChamb=3;
     int airData[numChamb] = { 0 };
     int newAirData[numChamb] = { 0 };
     char* data;
+    //char*fakeData ="{\"id_user\":\"2\",\"ac1\":\"58\",\"ac2\":\"0\",\"ac3\":\"0\",\"ac4\":\"0\",\"ac5\":\"0\",\"ac6\":\"0\",\"ac7\":\"0\",\"ac8\":\"0\",\"ac9\":\"0\",\"ac10\":\"0\",\"ac11\":\"0\",\"ac12\":\"0\",\"ac13\":\"0\",\"ac14\":\"0\",\"ac15\":\"0\",\"ac16\":\"0\",\"ac17\":\"0\",\"ac18\":\"0\",\"bin\":\"1\",\"piOrSever\":\"1\"}";
 
     int running = 1;
     while(running) {
         //curl the results to bedbot interface
         data = handle_url("http://ec2-54-204-185-188.compute-1.amazonaws.com/api/getAirData.php");
 
+        //skip user id
+        data = strstr(data, ":\"");
+        data=data+2;
+        char *result2= strstr(data, "\"");
+        memcpy( &data, &result2, sizeof(&data) );
         //convert data char * to int array
-        for(int i; i<numChamb; i++) {
-            char *pch = NULL;
-            pch = strtok(data, ", ");
-            size_t size;
-            char *endFirstLine;
-            size = strlen(pch);
-            sscanf(pch, "%d", &newAirData[i]);
+        for(int i=0; i<numChamb; i++) {
+            data = strstr(data, ":\"");
+            data=data+2;
+            char *result2= strstr(data, "\"");
+            int length = result2 - data;
+            char subbuff[length+1];
+            memcpy( subbuff, data, length );
+            subbuff[length] = '\0';
+            sscanf(subbuff, "%d", &newAirData[i]);
+            printf("air chamber %d: %d \n", i+1, newAirData[i]);
+            memcpy( &data, &result2, sizeof(&data) );
         }
-        char myarray[5] = {'-', '1', '2', '3', '\0'};
-        int i;
 
 
         if(data) {
-            if (memcmp(airData, data, sizeof(airData)) != 0){
+            if (memcmp(airData, newAirData, sizeof(airData)) != 0){
                 //the air data changed
-                airData=data;
+                memcpy(airData, newAirData, sizeof(airData));
             }
             free(data);
         }
