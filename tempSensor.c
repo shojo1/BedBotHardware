@@ -1,11 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-
-//the temperature sensor uses One Wire protocol. Enable this on the pi.
-system("modprobe w1-gpio");
-system("modprobe w1-therm");
-
-char temp_sensor[] = "sys/bus/w1/devices/28-000005e2fdc3/w1_slave";
+#include <string.h>
 
 char * temp_raw(){
     //Read the data from sensor
@@ -74,4 +69,15 @@ double read_temp(){
     double temp_c = int_temp/1000.0;
     double temp_f = temp_c * 9.0 / 5.0 + 32.0;
     return temp_f;
+}
+
+
+int main() {
+    //the temperature sensor uses One Wire protocol. Enable this on the pi.
+    system("modprobe w1-gpio");
+    system("modprobe w1-therm");
+
+    char temp_sensor[] = "sys/bus/w1/devices/28-000005e2fdc3/w1_slave";
+
+    //use the methods defined above to get pi data.
 }

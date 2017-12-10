@@ -5,8 +5,8 @@ cd wiringPi
 git pull origin
 ./build
 cd..
-apt-get libcurl4-openssl-dev
-pip install pycurl
+sudo apt-get install libcurl4-openssl-dev
+sudo pip install pycurl
 gcc -o gpio gpio.c -l wiringPi
 sudo ./gpio
 sudo python tempSensor.py
